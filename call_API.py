@@ -1,6 +1,7 @@
 import requests
 import os
 
+
 def api_results(_command, _param=None):
     """
     Return API
