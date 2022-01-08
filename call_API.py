@@ -14,6 +14,6 @@ def api_results(_command, _param=None):
     else:
         response = requests.get(url + _command + '?api_key=' + api_key)
     if response.status_code == 200:
-        return response
+        return response.json()
     else:
         print("API Error")
