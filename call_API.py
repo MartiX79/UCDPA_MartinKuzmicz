@@ -4,8 +4,18 @@ import os
 
 def api_results(_command, _param=None):
     """
-    Return API
-    https://developers.themoviedb.org/3/getting-started/introduction
+    Return API results in json format
+
+    Args:
+        _command (string): GET command
+        _param (string): Optional parameters, start with '&'
+
+    Returns:
+        json
+
+    Notes:
+        See more info about TMDB API
+        https://developers.themoviedb.org/3/getting-started/introduction
     """
     api_key = os.environ['TMDB_API_KEY']
     url = 'https://api.themoviedb.org/3/'
@@ -13,7 +23,10 @@ def api_results(_command, _param=None):
         response = requests.get(url + _command + '?api_key=' + api_key + _param)
     else:
         response = requests.get(url + _command + '?api_key=' + api_key)
-    if response.status_code == 200:
-        return response.json()
+    try:
+        response.raise_for_status()
+    except requests.exceptions.HTTPError as error:
+        print('API Error:')
+        print(error)
     else:
-        print("API Error")
+        return response.json()
