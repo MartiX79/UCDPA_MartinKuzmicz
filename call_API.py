@@ -7,8 +7,8 @@ def api_results(_command, _param=None):
     Return API results in json format
 
     Args:
-        _command (string): GET command
-        _param (string): Optional parameters, start with '&'
+        _command (str): GET command. Start with '/'
+        _param (str, optional): Optional parameters, start with '&'
 
     Returns:
         json
@@ -18,7 +18,7 @@ def api_results(_command, _param=None):
         https://developers.themoviedb.org/3/getting-started/introduction
     """
     api_key = os.environ['TMDB_API_KEY']
-    url = 'https://api.themoviedb.org/3/'
+    url = 'https://api.themoviedb.org/3'
     if _param:
         response = requests.get(url + _command + '?api_key=' + api_key + _param)
     else:
