@@ -3,11 +3,11 @@ import API_to_CSV
 
 # explore data
 # get list of movies from 2021
-movies_list = api_results('/discover/movie', '&primary_release_year=2021')
+movies_list_status, movies_list_results = api_results('/discover/movie', '&primary_release_year=2021')
 
 # check how many pages in result (max page parameter is 1000)
 # https://developers.themoviedb.org/3/discover/movie-discover
-total_pages = movies_list['total_pages']
+total_pages = movies_list_results['total_pages']
 print("Total pages for moves list: " + str(total_pages))
 
 # save discovered movies results to csv file
