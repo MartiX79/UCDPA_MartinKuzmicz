@@ -23,10 +23,14 @@ def api_results(_command, _param=None):
         response = requests.get(url + _command + '?api_key=' + api_key + _param)
     else:
         response = requests.get(url + _command + '?api_key=' + api_key)
+
+    status_code = response.status_code
+
     try:
         response.raise_for_status()
     except requests.exceptions.HTTPError as error:
         print('API Error:')
         print(error)
+        return status_code, None
     else:
-        return response.json()
+        return status_code, response.json()

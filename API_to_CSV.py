@@ -24,20 +24,21 @@ def discoverMovies(_movies_year, _fileName):
     # create reusable function
     def get_movies_list(_dateMin, _dateMax):
         _data = pd.DataFrame()
-        _movies_list = api_results('/discover/movie', '&primary_release_date.gte=' + str(_dateMin) + '&primary_release_date.lte=' + str(_dateMax))
-        _totalPages = _movies_list['total_pages']
-        print("Date range: " + str(_dateMin) + " - " + str(_dateMax))
-        print("Total pages: " + str(_totalPages))
-        print("Number of results: " + str(_movies_list['total_results']))
-        # loop trough all pages
-        for p in range(_totalPages):
-            _movies_list = api_results('/discover/movie', '&sort_by=release_date.desc&primary_release_date.gte=' + str(_dateMin) + '&primary_release_date.lte=' + str(_dateMax) + '&page=' + str(p + 1))
-            # created dataframe from results
-            _df = pd.json_normalize(_movies_list['results'])
-            _data = _data.append(_df)
-            print("Page " + str(p + 1) + " of " + str(_totalPages) + " scrapped")
-        print(_data.shape)
-        return _data
+        _movies_list_status, _movies_list_result = api_results('/discover/movie', '&primary_release_date.gte=' + str(_dateMin) + '&primary_release_date.lte=' + str(_dateMax))
+        if _movies_list_status == 200:
+            _totalPages = _movies_list_result['total_pages']
+            print("Date range: " + str(_dateMin) + " - " + str(_dateMax))
+            print("Total pages: " + str(_totalPages))
+            print("Number of results: " + str(_movies_list_result['total_results']))
+            # loop trough all pages
+            for p in range(_totalPages):
+                _movies_list_status, _movies_list_result = api_results('/discover/movie', '&sort_by=release_date.desc&primary_release_date.gte=' + str(_dateMin) + '&primary_release_date.lte=' + str(_dateMax) + '&page=' + str(p + 1))
+                # created dataframe from results
+                _df = pd.json_normalize(_movies_list_result['results'])
+                _data = _data.append(_df)
+                print("Page " + str(p + 1) + " of " + str(_totalPages) + " scrapped")
+            print(_data.shape)
+            return _data
 
     # initialize empty dataframe
     df_movies_list = pd.DataFrame()
@@ -77,9 +78,12 @@ def get_move_details(source_file, destination_file):
     for movie_id in df_movies_list['id']:
         m += 1
         print("Getting " + str(m) + " movie of " + str(total_movies))
-        movie_details = api_results('/movie/' + str(movie_id))
-        df_movie_details = pd.json_normalize(movie_details)
-        df_movies_list_details = df_movies_list_details.append(df_movie_details, ignore_index=True)
+        movie_details_status, movie_details_result = api_results('/movie/' + str(movie_id))
+        if movie_details_status == 200:
+            df_movie_details = pd.json_normalize(movie_details_result)
+            df_movies_list_details = df_movies_list_details.append(df_movie_details, ignore_index=True)
+        else:
+            print("!!  Can't get movie details. Error: " + str(movie_details_status) + " !!")
 
     df_movies_list_details.to_csv(destination_file + '.csv')
     print(df_movies_list_details.shape)
