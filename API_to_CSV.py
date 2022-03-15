@@ -6,7 +6,7 @@ from pandas.tseries.offsets import MonthEnd
 
 def discoverMovies(_movies_year, _fileName):
     '''
-    Getting list of movies and saving from API to csv file
+    Getting list of movies from API and saving  to csv file
 
     Args:
         _movies_year (int): Year to fetch the movies data
@@ -59,7 +59,7 @@ def discoverMovies(_movies_year, _fileName):
 
 def get_move_details(source_file, destination_file):
     '''
-    Function to get more moves details and save results into csv file.
+    Function to get  moves' details and save results into csv file.
 
     Parameters:
          source_file (str): CSV file with movies ID. Provide file name with extension
