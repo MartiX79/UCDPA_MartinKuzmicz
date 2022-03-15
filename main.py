@@ -1,5 +1,7 @@
 import pandas as pd
 import numpy as np
+import seaborn as sn
+import matplotlib.pyplot as plt
 
 from call_API import api_results
 import API_to_CSV
@@ -32,18 +34,22 @@ print(movies_df.columns)
 # analise data
 print(movies_df.info())
 print(movies_df.head())
+
 # change default display columns limit to see data from all columns
 pd.set_option('max_columns', None)
 print(movies_df.head())
 
-print(movies_df.info())
-movies_df = movies_df['revenue'].replace(0, np.nan)
-print(movies_df.head())
+#replace 0 with NaN to indicate missing value and not the 0 revenue
+movies_df['revenue'] = movies_df['revenue'].replace(0, np.nan)
+movies_df['budget'] = movies_df['budget'].replace(0, np.nan)
 
-#extract nested information
-print('----------------')
-'''
-def get_genres(_list):
-    for _genres in _list:
-        if _genres[]
-   '''
+print(movies_df.info())
+
+# rating score weight (no. of voting / rating)
+movies_df['rating_score'] = movies_df['vote_average']/movies_df['vote_count']
+
+movies_df_vote = movies_df.loc[(movies_df != 0).all(axis=1), :]
+
+sn.displot(movies_df_vote['vote_average'].fillna(movies_df_vote['vote_average'].median()))
+plt.show()
+
