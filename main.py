@@ -45,7 +45,7 @@ movies_df['budget'] = movies_df['budget'].replace(0, np.nan)
 
 print(movies_df.info())
 
-# rating score weight (no. of voting / rating)
+# rating score weight (no. of vote_average / vote_count)
 movies_df['rating_score'] = movies_df['vote_average']/movies_df['vote_count']
 
 movies_df_vote = movies_df.loc[(movies_df != 0).all(axis=1), :]
