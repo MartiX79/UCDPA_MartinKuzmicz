@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from call_API import api_results
 import API_to_CSV
 
-'''
+
 # explore data
 # get list of movies from 2021 from API
 _, movies_list_results = api_results('/discover/movie', '&primary_release_year=2021')
@@ -22,7 +22,7 @@ print("Total pages for moves list: " + str(total_pages))
 # get details for all mivies from the list and save to csv
 API_to_CSV.get_move_details('movies_list_2021.csv', 'movies_list_2021_details')
 
-'''
+
 # get list of columns
 movies_df = pd.read_csv('movies_list_2021_details.csv')
 print(movies_df.columns)
@@ -50,6 +50,6 @@ movies_df['rating_score'] = movies_df['vote_average']/movies_df['vote_count']
 
 movies_df_vote = movies_df.loc[(movies_df != 0).all(axis=1), :]
 
-sn.displot(movies_df_vote['vote_average'].fillna(movies_df_vote['vote_average'].median()))
+sn.histplot(data=movies_df_vote['vote_average'], bins=10)
 plt.show()
 
