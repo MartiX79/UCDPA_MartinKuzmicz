@@ -87,3 +87,36 @@ def get_move_details(source_file, destination_file):
 
     df_movies_list_details.to_csv(destination_file + '.csv')
     print(df_movies_list_details.shape)
+
+
+def get_addition_details(source_file, destination_file, request_type):
+    '''
+    Function to get  moves' additional details and save results into csv file.
+
+    Parameters:
+         source_file (str): CSV file with movies ID. Provide file name with extension
+         destination_file (str): file name without extension
+         request_type (str): request type, ie. keywords
+
+    Returns:
+        Saving movies results into CSV file
+    '''
+    print("Getting data...")
+    df_movies_list = pd.read_csv(source_file)
+    df_details_list = pd.DataFrame()
+    total_movies = df_movies_list['id'].count()
+    m = 0
+
+    # loop trough all movies from list and get details for each move
+    for movie_id in df_movies_list['id']:
+        m += 1
+        print("Getting " + str(m) + " movie of " + str(total_movies))
+        movie_details_status, movie_details_result = api_results('/movie/' + str(movie_id) + '/' + request_type)
+        if movie_details_status == 200:
+            df_movie_details = pd.json_normalize(movie_details_result)
+            df_details_list = df_details_list.append(df_movie_details, ignore_index=True)
+        else:
+            print("!!  Can't get movie details. Error: " + str(movie_details_status) + " !!")
+
+    df_details_list.to_csv(destination_file + '.csv')
+    print(df_details_list.shape)

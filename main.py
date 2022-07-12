@@ -2,9 +2,15 @@ import pandas as pd
 import numpy as np
 import seaborn as sn
 import matplotlib.pyplot as plt
+from ast import literal_eval
 
 from call_API import api_results
 import API_to_CSV
+
+# functions
+def convert_categories(x):
+    return ','.join([x['name'] for x in x])
+
 
 
 '''
@@ -22,11 +28,15 @@ print("Total pages for moves list: " + str(total_pages))
 
 # get details for all movies from the list and save to csv
 API_to_CSV.get_move_details('movies_list_2021.csv', 'movies_list_2021_details')
+
+# get keywords for movies from list and save to csv file
+API_to_CSV.get_addition_details('movies_list_2021.csv', 'keywords', 'keywords')
 '''
 
 # get list of columns
 movies_df = pd.read_csv('movies_list_2021_details.csv')
 print(movies_df.columns)
+print(movies_df.shape)
 
 # drop unnecessary columns
 movies_df = movies_df[['id','genres','budget','revenue','vote_average','vote_count']]
@@ -46,7 +56,13 @@ movies_df['vote_count'] = movies_df['vote_count'].replace(0, np.nan)
 vote_mean = movies_df['vote_average'].mean()
 vote_count_mean = movies_df['vote_count'].mean()
 
+# Parse objects
+movies_df['genres'] = movies_df['genres'].apply(literal_eval)
+
+movies_df['genres'] = movies_df['genres'].apply(convert_categories)
+
 # analise data
+print(movies_df.shape)
 print(movies_df.info())
 print(movies_df.head())
 print(vote_mean)
@@ -56,7 +72,21 @@ print(vote_count_mean )
 # rating score weight (no. of vote_average / vote_count)
 movies_df['rating_score'] = movies_df['vote_average']/movies_df['vote_count']
 
+# get keywords data
+keywords_df = pd.read_csv('keywords.csv')
 
+print(keywords_df.head())
+print(keywords_df.columns)
+print(keywords_df.shape)
+
+# clean Keywords df data
+keywords_df['keywords'] = keywords_df['keywords'].apply(literal_eval)
+keywords_df['keywords'] = keywords_df['keywords'].apply(convert_categories)
+keywords_df['keywords'] = keywords_df['keywords'].replace('', np.nan)
+keywords_df = keywords_df.dropna()
+
+print(keywords_df.head())
+print(keywords_df.shape)
 
 
 
