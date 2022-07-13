@@ -3,6 +3,7 @@ import numpy as np
 import seaborn as sn
 import matplotlib.pyplot as plt
 from ast import literal_eval
+from collections import Counter
 
 from call_API import api_results
 import API_to_CSV
@@ -61,7 +62,7 @@ movies_df['genres'] = movies_df['genres'].apply(literal_eval)
 
 movies_df['genres'] = movies_df['genres'].apply(convert_categories)
 
-# analise data
+# analise data source
 print(movies_df.shape)
 print(movies_df.info())
 print(movies_df.head())
@@ -94,8 +95,24 @@ movies_df = movies_df[['id','title','genres','budget','revenue','vote_average','
 print(movies_df.shape)
 print(movies_df.head())
 
+# analise content - keywords, check occurrence
+keyword_occurrence = keywords_df.apply(lambda x: pd.Series(x['keywords']), axis=1).stack().reset_index(level=1, drop=True)
+keyword_occurrence = keyword_occurrence.value_counts()
+keywords_top10 = keyword_occurrence.head(10)
+print(keywords_top10)
+
+fig = plt.figure(figsize=(12, 7))
+plt.bar(keywords_top10.keys().tolist(), keywords_top10.tolist())
+plt.subplots_adjust(bottom=0.3)
+plt.xticks(rotation=60, horizontalalignment="center")
+plt.xlabel("Keywords")
+plt.ylabel("Occurrence")
+plt.title("Occurrence of top 10 keywords")
+plt.show()
 
 
+print("======oooooooooo==========")
+#print(keywords)
 
 
 '''
