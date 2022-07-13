@@ -39,7 +39,7 @@ print(movies_df.columns)
 print(movies_df.shape)
 
 # drop unnecessary columns
-movies_df = movies_df[['id','genres','budget','revenue','vote_average','vote_count']]
+movies_df = movies_df[['id','title','genres','budget','revenue','vote_average','vote_count']]
 print(movies_df.columns)
 
 # change default display columns limit to see data from all columns
@@ -87,6 +87,14 @@ keywords_df = keywords_df.dropna()
 
 print(keywords_df.head())
 print(keywords_df.shape)
+
+# merge two dataframes
+movies_df = movies_df.merge(keywords_df, how='left', on='id')
+movies_df = movies_df[['id','title','genres','budget','revenue','vote_average','vote_count','rating_score','keywords']]
+print(movies_df.shape)
+print(movies_df.head())
+
+
 
 
 
