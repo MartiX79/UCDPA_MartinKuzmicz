@@ -52,26 +52,17 @@ movies_df['revenue'] = movies_df['revenue'].replace(0, np.nan)
 movies_df['budget'] = movies_df['budget'].replace(0, np.nan)
 movies_df['vote_average'] = movies_df['vote_average'].replace(0, np.nan)
 movies_df['vote_count'] = movies_df['vote_count'].replace(0, np.nan)
+movies_df.drop_duplicates(keep=False, inplace=True)         # remove duplicates
 
-# calculate mean for votes
-vote_mean = movies_df['vote_average'].mean()
-vote_count_mean = movies_df['vote_count'].mean()
-
-# Parse objects
+# access genres data
 movies_df['genres'] = movies_df['genres'].apply(literal_eval)
-
 movies_df['genres'] = movies_df['genres'].apply(convert_categories)
 
 # analise data source
 print(movies_df.shape)
 print(movies_df.info())
 print(movies_df.head())
-print(vote_mean)
-print(vote_count_mean )
 
-
-# rating score weight (no. of vote_average / vote_count)
-movies_df['rating_score'] = movies_df['vote_average']/movies_df['vote_count']
 
 # get keywords data
 keywords_df = pd.read_csv('keywords.csv')
@@ -91,7 +82,7 @@ print(keywords_df.shape)
 
 # merge two dataframes
 movies_df = movies_df.merge(keywords_df, how='left', on='id')
-movies_df = movies_df[['id','title','genres','budget','revenue','vote_average','vote_count','rating_score','keywords']]
+movies_df = movies_df[['id','title','genres','budget','revenue','vote_average','vote_count','keywords']]
 print(movies_df.shape)
 print(movies_df.head())
 
@@ -101,6 +92,9 @@ keyword_occurrence = keyword_occurrence.value_counts()
 keywords_top10 = keyword_occurrence.head(10)
 print(keywords_top10)
 
+# check for nulls
+print(movies_df[['id','title','genres','keywords']].isnull().sum())
+
 fig = plt.figure(figsize=(12, 7))
 plt.bar(keywords_top10.keys().tolist(), keywords_top10.tolist())
 plt.subplots_adjust(bottom=0.3)
@@ -108,12 +102,35 @@ plt.xticks(rotation=60, horizontalalignment="center")
 plt.xlabel("Keywords")
 plt.ylabel("Occurrence")
 plt.title("Occurrence of top 10 keywords")
-plt.show()
+################################plt.show()
 
 
-print("======oooooooooo==========")
-#print(keywords)
+# rating score weight (no. of vote_average / vote_count)
+movies_df['rating_score'] = movies_df['vote_average']/movies_df['vote_count']
 
+# analise votes
+vote_mean = movies_df['vote_average'].mean()
+print(vote_mean)
+
+minimum_vote = movies_df['vote_count'].quantile(0.85)
+
+movies_voted = movies_df.copy().loc[movies_df['vote_count'] >= minimum_vote]
+movies_voted = movies_voted[['id','title','vote_average','vote_count']]
+print(movies_voted.shape)
+
+
+# calculating weighted average rating (IMDB formula)
+def weighted_rating (x, min_vote = minimum_vote, mean_vote = vote_mean):
+    no_votes = x['vote_count']
+    avg_vote = x['vote_average']
+    return (no_votes/(no_votes+minimum_vote) * avg_vote) + (min_vote / (min_vote + no_votes) * mean_vote)
+
+movies_voted['score'] = movies_voted.apply(weighted_rating, axis=1)
+
+movies_voted = movies_voted.sort_values('score', ascending=False)
+# top 10 movies
+pd.set_option('precision', 1) # round score to 1 placement
+print(movies_voted.head(10))
 
 '''
 movies_df_vote = movies_df.loc[(movies_df != 0).all(axis=1), :]
