@@ -95,14 +95,13 @@ print(keywords_top10)
 # check for nulls
 print(movies_df[['id','title','genres','keywords']].isnull().sum())
 
-fig = plt.figure(figsize=(12, 7))
 plt.bar(keywords_top10.keys().tolist(), keywords_top10.tolist())
-plt.subplots_adjust(bottom=0.3)
+plt.subplots_adjust(bottom=0.4)
 plt.xticks(rotation=60, horizontalalignment="center")
 plt.xlabel("Keywords")
 plt.ylabel("Occurrence")
 plt.title("Occurrence of top 10 keywords")
-################################plt.show()
+plt.show()
 
 
 # rating score weight (no. of vote_average / vote_count)
@@ -132,10 +131,10 @@ movies_voted = movies_voted.sort_values('score', ascending=False)
 pd.set_option('precision', 1) # round score to 1 placement
 print(movies_voted.head(10))
 
-'''
-movies_df_vote = movies_df.loc[(movies_df != 0).all(axis=1), :]
-
-sn.histplot(data=movies_df_vote['vote_average'], bins=10)
-#plt.show()
-
-'''
+# graph of ratings
+plt.figure(figsize=(10, 4))
+movies_voted['vote_average'].hist(bins=20)
+plt.xlabel("Rating")
+plt.ylabel("Votes")
+plt.title("Average votes")
+plt.show()
