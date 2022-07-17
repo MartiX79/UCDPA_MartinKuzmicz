@@ -4,6 +4,8 @@ import seaborn as sn
 import matplotlib.pyplot as plt
 from ast import literal_eval
 from collections import Counter
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import linear_kernel
 
 from call_API import api_results
 import API_to_CSV
@@ -138,3 +140,40 @@ plt.xlabel("Rating")
 plt.ylabel("Votes")
 plt.title("Average votes")
 plt.show()
+
+# create recommendation
+
+# crate new column by combining keywords and genres
+movies_df['features'] = movies_df['keywords'] + ',' + movies_df['genres']
+movies_df['features'] = movies_df['features'].fillna('')
+
+print(movies_df['features'])
+
+# remove comma(,) and make all lowercase letters
+movies_df['features'] = movies_df['features'].str.lower().str.replace(","," ")
+
+print(movies_df['features'])
+
+# F-IDF Remove all stop words
+tfidf = TfidfVectorizer(stop_words='english')
+
+# TF-IDF matrix
+tfidf_matrix = tfidf.fit_transform(movies_df['features'])
+
+# similarity matrix
+cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
+m_index = pd.Series(movies_df.index, index=movies_df['title'])
+
+
+def recommended_movies(title):
+    movie_index = m_index[title]
+    recom_movies_list = list(enumerate(cosine_sim[movie_index]))
+    recom_movies_list = sorted(recom_movies_list, key=lambda x: x[1], reverse=True)
+    recom_movies_list = recom_movies_list[1:11]
+    movie_indices = [i[0] for i in recom_movies_list]
+    return movies_df['title'].iloc[movie_indices]
+
+print("==================")
+print(recommended_movies('Spider-Man: No Way Home'))
+print("")
+print(recommended_movies('Black Widow'))
