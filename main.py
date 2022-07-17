@@ -1,21 +1,11 @@
 import pandas as pd
 import numpy as np
-import seaborn as sn
 import matplotlib.pyplot as plt
 from ast import literal_eval
-from collections import Counter
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
 
-from call_API import api_results
-import API_to_CSV
-
-# functions
-def convert_categories(x):
-    return ','.join([x['name'] for x in x])
-
-
-
+# if no new dada needed and working on existing csv files, comment lines from 10 - 26
 '''
 # explore data
 # get list of movies from 2021 from API
@@ -35,6 +25,9 @@ API_to_CSV.get_move_details('movies_list_2021.csv', 'movies_list_2021_details')
 # get keywords for movies from list and save to csv file
 API_to_CSV.get_addition_details('movies_list_2021.csv', 'keywords', 'keywords')
 '''
+
+def convert_categories(x):
+    return ','.join([x['name'] for x in x])
 
 # get list of columns
 movies_df = pd.read_csv('movies_list_2021_details.csv')
