@@ -107,6 +107,7 @@ vote_mean = movies_df['vote_average'].mean()
 print(vote_mean)
 
 minimum_vote = movies_df['vote_count'].quantile(0.85)
+print(minimum_vote)
 
 movies_voted = movies_df.copy().loc[movies_df['vote_count'] >= minimum_vote]
 movies_voted = movies_voted[['id','title','vote_average','vote_count']]
@@ -134,7 +135,7 @@ plt.ylabel("Votes")
 plt.title("Average votes")
 plt.show()
 
-# create recommendation
+# recommendation
 
 # crate new column by combining keywords and genres
 movies_df['features'] = movies_df['keywords'] + ',' + movies_df['genres']
@@ -162,7 +163,7 @@ def recommended_movies(title):
     movie_index = m_index[title]
     recom_movies_list = list(enumerate(cosine_sim[movie_index]))
     recom_movies_list = sorted(recom_movies_list, key=lambda x: x[1], reverse=True)
-    recom_movies_list = recom_movies_list[1:11]
+    recom_movies_list = recom_movies_list[1:6]
     movie_indices = [i[0] for i in recom_movies_list]
     return movies_df['title'].iloc[movie_indices]
 

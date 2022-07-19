@@ -99,7 +99,7 @@ def get_addition_details(source_file, destination_file, request_type):
          request_type (str): request type, ie. keywords
 
     Returns:
-        Saving movies results into CSV file
+        Saving results into CSV file
     '''
     print("Getting data...")
     df_movies_list = pd.read_csv(source_file)

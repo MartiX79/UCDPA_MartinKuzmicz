@@ -11,7 +11,7 @@ def api_results(_command, _param=None):
         _param (str, optional): Optional parameters, start with '&'
 
     Returns:
-        json
+        status code and json
 
     Notes:
         See more info about TMDB API
