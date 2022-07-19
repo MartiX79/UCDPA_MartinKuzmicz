@@ -4,10 +4,10 @@ import matplotlib.pyplot as plt
 from ast import literal_eval
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
+from call_API import api_results
+import API_to_CSV
 
 # if no new dada needed and working on existing csv files, comment lines from 10 - 26
-'''
-# explore data
 # get list of movies from 2021 from API
 _, movies_list_results = api_results('/discover/movie', '&primary_release_year=2021')
 
@@ -24,7 +24,7 @@ API_to_CSV.get_move_details('movies_list_2021.csv', 'movies_list_2021_details')
 
 # get keywords for movies from list and save to csv file
 API_to_CSV.get_addition_details('movies_list_2021.csv', 'keywords', 'keywords')
-'''
+
 
 def convert_categories(x):
     return ','.join([x['name'] for x in x])
@@ -104,7 +104,7 @@ movies_df['rating_score'] = movies_df['vote_average']/movies_df['vote_count']
 
 # analise votes
 vote_mean = movies_df['vote_average'].mean()
-print(vote_mean)
+print("vote mean -> " + str(vote_mean))
 
 minimum_vote = movies_df['vote_count'].quantile(0.85)
 print(minimum_vote)
@@ -124,7 +124,7 @@ movies_voted['score'] = movies_voted.apply(weighted_rating, axis=1)
 
 movies_voted = movies_voted.sort_values('score', ascending=False)
 # top 10 movies
-pd.set_option('precision', 1) # round score to 1 placement
+movies_voted['score'] = movies_voted['score'].map("{:,.1f}".format)
 print(movies_voted.head(10))
 
 # graph of ratings
@@ -158,6 +158,7 @@ tfidf_matrix = tfidf.fit_transform(movies_df['features'])
 cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
 m_index = pd.Series(movies_df.index, index=movies_df['title'])
 
+print(m_index[:5])
 
 def recommended_movies(title):
     movie_index = m_index[title]
